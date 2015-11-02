@@ -1009,6 +1009,5 @@ int main(int argc, char* argv[])
 		std::cout << "exception: " << exception.what();
 		return EXIT_FAILURE;
 	}
-	std::cin.get();
 	return EXIT_SUCCESS;
 }
