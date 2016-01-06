@@ -490,17 +490,6 @@ size_t get_ebml_element_size_length(const unsigned char* data, size_t available_
 		{
 			return 8 - position;
 		}
-		if (position == 4)
-		{
-			if (available_data_length > 1)
-			{
-				data++;
-			}
-			else
-			{
-				throw std::runtime_error("not enough data to read element size");
-			}
-		}
 	}
 	throw std::runtime_error("invalid element size");
 }
