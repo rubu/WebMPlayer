@@ -491,6 +491,10 @@ size_t get_ebml_element_size_length(const unsigned char* data, size_t available_
 			return 8 - position;
 		}
 	}
+	if (*data == 1)
+	{
+		return 8;
+	}
 	throw std::runtime_error("invalid element size");
 }
 
@@ -504,7 +508,7 @@ __int64 get_ebml_element_size(const unsigned char* data, size_t available_data_l
 	available_data_length -= ebml_element_size_length;
 	unsigned char element_size[8] = { 0 };
 	memcpy(&element_size[8 - ebml_element_size_length], data, ebml_element_size_length);
-	element_size[8 - ebml_element_size_length] -=  0x80 >> (ebml_element_size_length - 1) % 4;
+	element_size[8 - ebml_element_size_length] -= 1 << (8 - ebml_element_size_length);
 	if (ebml_element_size_length == 1 && element_size[7] == 0x7f)
 	{
 		return -1;
