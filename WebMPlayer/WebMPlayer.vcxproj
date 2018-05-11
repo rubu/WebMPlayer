@@ -88,7 +88,16 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ebml.cpp" />
+    <ClCompile Include="VPXDecodingThread.cpp" />
     <ClCompile Include="WebMPlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Assert.h" />
+    <ClInclude Include="AV1.h" />
+    <ClInclude Include="DecodingThread.h" />
+    <ClInclude Include="Ebml.h" />
+    <ClInclude Include="VPXDecodingThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
