@@ -73,7 +73,7 @@ bool temporal_unit(const unsigned char* data, size_t temporal_unit_size)
 	return true;
 }
 
-bool av1_bitstream(const unsigned char* data, size_t available_data_length)
+bool parse_av1_bitstream(const unsigned char* data, size_t available_data_length)
 {
 	while (available_data_length > 0)
 	{

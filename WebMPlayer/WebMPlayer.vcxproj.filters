@@ -24,6 +24,9 @@
     <ClCompile Include="Ebml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AV1DecodingThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AV1.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ebml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AV1DecodingThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "Ebml.h"
-#include "AV1.h"
 #include "VPXDecodingThread.h"
+#include "AV1DecodingThread.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -9,7 +9,9 @@
 
 #include <vpx/vpx_decoder.h>
 #include <vpx/vp8dx.h>
-
+#include <aom/aom.h>
+#include <aom/aom_decoder.h>
+#include <aom/aomdx.h>
 #include <SDL.h>
 #undef main
 
@@ -222,6 +224,7 @@ int main(int argc, char* argv[])
 		vpx_codec_dec_cfg_t decoder_configuration;
 		vpx_codec_err_t vpx_error = VPX_CODEC_OK;
 		vpx_codec_caps_t codec_capabilities = 0;
+		aom_codec_ctx_t aom_codec_context;
 		unsigned int video_track_number = 0;
 		bool frame_callback_enabled = false;
 		auto TrackEntry = std::find_if(Tracks->children().begin(), Tracks->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::TrackEntry; });
@@ -249,27 +252,34 @@ int main(int argc, char* argv[])
 				}
 				else if (sCodec == "V_AV1")
 				{
-					// No support for AV1 decoder, just analyze the frames
-					auto Cluster = std::find_if(segment->children().begin(), segment->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Cluster; });
-					char timestamp[13] = { 0 };
-					while (Cluster != segment->children().end())
+					video_track_number = std::stoi(TrackNumber->value());
+					auto Video = std::find_if(TrackEntry->children().begin(), TrackEntry->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Video; });
+					aom_codec_iface_t* aom_codec_interface = aom_codec_av1_dx();
+					aom_codec_caps_t aom_codec_capabilities = aom_codec_get_caps(aom_codec_interface);
+					aom_codec_dec_cfg_t aom_codec_configuration;
+					if (Video == (TrackEntry->children().end()))
 					{
-						auto Timecode = std::find_if(Cluster->children().begin(), Cluster->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Timecode; });
-						if (Timecode == (Cluster->children().end()))
-						{
-							throw std::runtime_error("Cluster element does not contain a Timecode child element");
-						}
-						auto cluster_pts = std::stoi(Timecode->value());
-						auto SimpleBlock = std::find_if(Cluster->children().begin(), Cluster->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::SimpleBlock; });
-						while (SimpleBlock != Cluster->children().end())
-						{
-							// https://aomediacodec.github.io/av1-isobmff/ 2.5 states the the sample entry should correspond to the open_bistream_unit syntax
-							//av1_bitstream(SimpleBlock->data(), SimpleBlock->size());
-							//open_bitstream_unit(SimpleBlock->data(), SimpleBlock->size());
-							frame_unit(SimpleBlock->data(), SimpleBlock->size());
-							++SimpleBlock;
-						}
+						throw std::runtime_error("TrackEntry with codec " + sCodec + " does not contain a Video element");
 					}
+					auto PixelWidth = std::find_if(Video->children().begin(), Video->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::PixelWidth; });
+					if (PixelWidth == (Video->children().end()))
+					{
+						throw std::runtime_error("Video element does not contain a PixelWidth child element");
+					}
+					auto PixelHeight = std::find_if(Video->children().begin(), Video->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::PixelHeight; });
+					if (PixelHeight == (Video->children().end()))
+					{
+						throw std::runtime_error("Video element does not contain a PixelHeight child element");
+					}
+					decoder_configuration.w = std::stoi(PixelWidth->value());
+					decoder_configuration.h = std::stoi(PixelHeight->value());;
+					decoder_configuration.threads = 1;
+					auto aom_error = aom_codec_dec_init(&aom_codec_context, aom_codec_interface, &aom_codec_configuration, 0);
+					if (aom_error != AOM_CODEC_OK)
+					{
+						throw std::runtime_error(std::string("aom_codec_dec_init() failed with ").append(std::to_string(aom_error)));
+					}
+					decoding_thread.reset(new AV1DecodingThread(aom_codec_context, *segment, video_track_number, milliseconds_per_tick, verbose));
 				}
 				if (codec_interface != nullptr)
 				{
@@ -328,7 +338,14 @@ int main(int argc, char* argv[])
 		auto decoding_thread_instance = decoding_thread.get();
 		std::thread thread([decoding_thread_instance, renderer, texture]()
 		{
-			decoding_thread_instance->decode(renderer, texture);
+			try
+			{
+				decoding_thread_instance->decode(renderer, texture);
+			}
+			catch (const std::exception& exception)
+			{
+				std::cout << "exception: " << exception.what();
+			}
 		});
 		SDL_Event event;
 		bool quit = false;

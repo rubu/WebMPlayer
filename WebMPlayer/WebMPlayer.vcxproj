@@ -41,13 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\SDL2-2.0.3\include;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\SDL2-2.0.3\lib\x86;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\lib\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\SDL2-2.0.3\include;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\include;$(SolutionDir)\aom-6e2ced66f9664a7fc4044b9863a21f315dbeb04b-win32-vs12\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\SDL2-2.0.3\lib\x86;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\lib\Win32;$(SolutionDir)\aom-6e2ced66f9664a7fc4044b9863a21f315dbeb04b-win32-vs12\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\SDL2-2.0.3\include;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\SDL2-2.0.3\lib\x86;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\lib\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\SDL2-2.0.3\include;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\include;$(SolutionDir)\aom-6e2ced66f9664a7fc4044b9863a21f315dbeb04b-win32-vs12\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\SDL2-2.0.3\lib\x86;$(SolutionDir)\libvpx-1.4.0-x86-win32-vs12\lib\Win32;$(SolutionDir)\aom-6e2ced66f9664a7fc4044b9863a21f315dbeb04b-win32-vs12\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -60,7 +60,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Winmm.lib;SDL2.lib;Ws2_32.lib;vpxmdd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;SDL2.lib;Ws2_32.lib;vpxmdd.lib;aom.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\SDL2-2.0.3\lib\x86\SDL2.dll $(TargetDir)</Command>
@@ -88,6 +88,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AV1DecodingThread.cpp" />
     <ClCompile Include="Ebml.cpp" />
     <ClCompile Include="VPXDecodingThread.cpp" />
     <ClCompile Include="WebMPlayer.cpp" />
@@ -95,6 +96,7 @@
   <ItemGroup>
     <ClInclude Include="Assert.h" />
     <ClInclude Include="AV1.h" />
+    <ClInclude Include="AV1DecodingThread.h" />
     <ClInclude Include="DecodingThread.h" />
     <ClInclude Include="Ebml.h" />
     <ClInclude Include="VPXDecodingThread.h" />
