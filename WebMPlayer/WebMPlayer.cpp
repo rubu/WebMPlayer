@@ -25,6 +25,10 @@
 
 #include <Winsock2.h>
 
+#include <atlbase.h>
+#include <altcom.h>
+#include <Shobjidl.h>
+
 struct FileDeleter
 {
 	void operator()(FILE* file)
@@ -47,8 +51,16 @@ int main(int argc, char* argv[])
 		{
 			executable_name = executable_name.substr(last_path_separator + 1);
 		}
+		std::string file_path;
 		if (argc < 2)
 		{
+			CoInitialize(NULL);
+			CComPtr<IFileDialog> pFileDialog;
+			HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFileDialog));
+			if (pFileDialog)
+			{
+
+			}
 			std::cout << "Usage: " << executable_name << " <input file> [-v]" << std::endl;
 			return EXIT_FAILURE;
 		}
