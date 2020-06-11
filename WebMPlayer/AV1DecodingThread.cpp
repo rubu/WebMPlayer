@@ -1,3 +1,4 @@
+#if defined(WITH_AV1)
 #include "AV1DecodingThread.h"
 #include "AV1.h"
 #include "Ebml.h"
@@ -114,3 +115,4 @@ void AV1DecodingThread::decode(SDL_Renderer* renderer, SDL_Texture* texture)
 		Cluster = std::find_if(++Cluster, segment_.children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::Cluster; });
 	}
 }
+#endif

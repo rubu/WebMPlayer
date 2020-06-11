@@ -26,8 +26,17 @@
 #include <Winsock2.h>
 
 #include <atlbase.h>
-#include <altcom.h>
+#include <atlcom.h>
 #include <Shobjidl.h>
+
+/*
+	until libvpx is recompiled or acquired vai a package management system that would ensure
+	that it is build with the correct toolchain, use the legacy stdio imports lib to provide
+	old stdio functions that have been moved to inline since vs2015
+*/
+#if _MSC_VER >= 1900
+#pragma comment(lib, "legacy_stdio_definitions.lib")
+#endif
 
 struct FileDeleter
 {
@@ -236,7 +245,9 @@ int main(int argc, char* argv[])
 		vpx_codec_dec_cfg_t decoder_configuration;
 		vpx_codec_err_t vpx_error = VPX_CODEC_OK;
 		vpx_codec_caps_t codec_capabilities = 0;
+#if defined(WITH_AV1)
 		aom_codec_ctx_t aom_codec_context;
+#endif
 		unsigned int video_track_number = 0;
 		bool frame_callback_enabled = false;
 		auto TrackEntry = std::find_if(Tracks->children().begin(), Tracks->children().end(), [](const EbmlElement& ebml_element) { return ebml_element.id() == EbmlElementId::TrackEntry; });
@@ -262,6 +273,7 @@ int main(int argc, char* argv[])
 					codec_interface = vpx_codec_vp9_dx();
 					codec_capabilities = vpx_codec_get_caps(codec_interface);
 				}
+#if defined(WITH_AV1)
 				else if (sCodec == "V_AV1")
 				{
 					video_track_number = std::stoi(TrackNumber->value());
@@ -293,6 +305,7 @@ int main(int argc, char* argv[])
 					}
 					decoding_thread.reset(new AV1DecodingThread(aom_codec_context, *segment, video_track_number, milliseconds_per_tick, verbose));
 				}
+#endif
 				if (codec_interface != nullptr)
 				{
 					video_track_number = std::stoi(TrackNumber->value());

@@ -27,6 +27,9 @@
     <ClCompile Include="AV1DecodingThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AV1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AV1.h">

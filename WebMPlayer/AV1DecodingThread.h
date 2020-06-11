@@ -1,5 +1,6 @@
 #pragma once
 
+#if defined(WITH_AV1)
 #include "DecodingThread.h"
 
 #include <aom/aom.h>
@@ -15,3 +16,4 @@ public:
 private:
 	aom_codec_ctx_t codec_context_;
 };
+#endif
